@@ -9,6 +9,7 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
@@ -28,6 +29,11 @@ import {
   localServiceHours,
   serviceWindow,
 } from './service-hours';
+import { documentLabel } from './document-format';
+import { Brand } from './ui/brand';
+import { HowItWorks } from './sections/how-it-works/how-it-works';
+import { Faq } from './sections/faq/faq';
+import { SiteFooter } from './sections/site-footer/site-footer';
 
 type ApiStatus = 'checking' | 'online' | 'offline';
 
@@ -38,12 +44,21 @@ type ApiStatus = 'checking' | 'online' | 'offline';
  */
 export type Availability = 'checking' | 'available' | 'unavailable' | 'closed';
 
+/**
+ * Qué salió mal, para darle a cada caso su propio tratamiento visual.
+ * `unavailable` y `closed` significan que el backend no respondió: está
+ * apagado, fuera de horario o la respuesta no es suya.
+ */
+export type ErrorKind = 'validation' | 'notFound' | 'failed' | 'unavailable' | 'closed';
+
+/** Lo que muestra el panel de resultados. La validación se muestra junto al campo. */
+export type PanelState = 'idle' | 'loading' | 'person' | 'company' | Exclude<ErrorKind, 'validation'>;
+
 interface UiError {
+  kind: ErrorKind;
   kicker: string;
   message: string;
   hint: string;
-  /** El backend no respondió: está apagado, fuera de horario o no es él. */
-  unavailable: boolean;
 }
 
 const AVAILABILITY_LABELS: Record<Availability, string> = {
@@ -57,7 +72,7 @@ const AVAILABILITY_LABELS: Record<Availability, string> = {
 const REFRESH_INTERVAL_MS = 30_000;
 
 @Component({
-  imports: [FormsModule],
+  imports: [FormsModule, NgTemplateOutlet, Brand, HowItWorks, Faq, SiteFooter],
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',
@@ -73,6 +88,37 @@ export class App {
 
   readonly isPerson = computed(() => this.result()?.entityType === 'PERSON');
   readonly isCompany = computed(() => this.result()?.entityType === 'COMPANY');
+
+  /** El documento de la última consulta enviada, ya normalizado. */
+  readonly lastQuery = signal<{ type: DocumentType; number: string } | null>(null);
+
+  readonly queryLabel = computed(() => {
+    const query = this.lastQuery();
+    return query ? documentLabel(query.type, query.number) : '';
+  });
+
+  readonly validationError = computed(() => {
+    const error = this.error();
+    return error?.kind === 'validation' ? error : null;
+  });
+
+  readonly panelState = computed<PanelState>(() => {
+    const error = this.error();
+
+    if (this.loading()) {
+      return 'loading';
+    }
+    if (error && error.kind !== 'validation') {
+      return error.kind;
+    }
+    if (this.isPerson() && this.result()?.person) {
+      return 'person';
+    }
+    if (this.isCompany() && this.result()?.company) {
+      return 'company';
+    }
+    return 'idle';
+  });
 
   readonly serviceHours = SERVICE_HOURS_LABEL;
   readonly serviceOffset = SERVICE_OFFSET_LABEL;
@@ -128,6 +174,7 @@ export class App {
   private readonly api = inject(DocumentApiService);
   private readonly injector = inject(Injector);
   private readonly workspace = viewChild<ElementRef<HTMLElement>>('workspace');
+  private readonly documentInput = viewChild<ElementRef<HTMLInputElement>>('documentInput');
   private healthCheck: Promise<boolean> | null = null;
 
   constructor() {
@@ -187,19 +234,21 @@ export class App {
 
     if (!normalized) {
       this.error.set({
+        kind: 'validation',
         kicker: 'DATOS NO VÁLIDOS',
         message: this.documentType === 'CEDULA'
           ? 'Ingresa una cédula válida de 6 a 12 dígitos.'
           : 'Ingresa un NIT válido.',
         hint: 'Revisa el número e inténtalo de nuevo.',
-        unavailable: false,
       });
       this.result.set(null);
       this.searched.set(true);
+      this.focusDocumentInput();
       return;
     }
 
     this.documentNumber = normalized;
+    this.lastQuery.set({ type: this.documentType, number: normalized });
     this.loading.set(true);
     this.result.set(null);
     this.error.set(null);
@@ -227,15 +276,16 @@ export class App {
   }
 
   /**
-   * En pantallas angostas el resultado queda debajo del formulario: se
-   * desplaza hasta él para que no pase desapercibido.
+   * Si el resultado queda debajo del pliegue, se desplaza lo justo para
+   * mostrarlo, sin sacar el formulario de la vista si cabe. El desplazamiento
+   * es suave salvo que el sistema pida reducir el movimiento (ver styles.css).
    */
   private revealWorkspace(): void {
     afterNextRender(() => {
       const element = this.workspace()?.nativeElement;
 
       if (element && element.getBoundingClientRect().top > window.innerHeight * 0.6) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        element.scrollIntoView({ block: 'nearest' });
       }
     }, { injector: this.injector });
   }
@@ -245,6 +295,33 @@ export class App {
     this.result.set(null);
     this.error.set(null);
     this.searched.set(false);
+  }
+
+  /** Al corregir el número, el aviso de validación ya no aplica. */
+  clearValidation(): void {
+    if (this.validationError()) {
+      this.error.set(null);
+    }
+  }
+
+  /** Lleva el foco al campo del documento, desplazándose solo si no está a la vista. */
+  focusDocumentInput(): void {
+    const input = this.documentInput()?.nativeElement;
+
+    if (!input) {
+      return;
+    }
+
+    const { top, bottom } = input.getBoundingClientRect();
+
+    if (top < 0 || bottom > window.innerHeight) {
+      input.scrollIntoView({ block: 'center' });
+    }
+    input.focus({ preventScroll: true });
+  }
+
+  formatDocument(type: DocumentType, value: string): string {
+    return documentLabel(type, value);
   }
 
   getPerson(): PersonBasicData | null {
@@ -327,24 +404,24 @@ export class App {
     switch (error.status) {
       case HttpStatusCode.NotFound:
         return {
+          kind: 'notFound',
           kicker: 'SIN RESULTADOS',
           message: 'No encontramos información para el documento consultado.',
           hint: 'Prueba con otro documento o verifica que el número esté escrito correctamente.',
-          unavailable: false,
         };
       case HttpStatusCode.BadRequest:
         return {
+          kind: 'validation',
           kicker: 'DATOS NO VÁLIDOS',
           message: 'La solicitud no es válida.',
           hint: 'Revisa el tipo y el número de documento.',
-          unavailable: false,
         };
       default:
         return {
+          kind: 'failed',
           kicker: 'NO FUE POSIBLE COMPLETARLA',
           message: 'No fue posible obtener la información en este momento.',
           hint: 'Intenta nuevamente en unos segundos.',
-          unavailable: false,
         };
     }
   }
@@ -354,19 +431,19 @@ export class App {
 
     if (schedule && !schedule.open) {
       return {
+        kind: 'closed',
         kicker: 'FUERA DE HORARIO',
         message: 'El servicio está fuera de horario.',
         hint: `Funciona de ${SERVICE_START_HOUR}:00 a ${SERVICE_END_HOUR}:00 (${SERVICE_OFFSET_LABEL}). `
           + `Abre en ${formatDuration(schedule.minutesToChange)}.`,
-        unavailable: true,
       };
     }
 
     return {
+      kind: 'unavailable',
       kicker: 'SERVICIO NO DISPONIBLE',
       message: 'El servicio no está disponible en este momento.',
       hint: 'Intenta nuevamente en unos minutos.',
-      unavailable: true,
     };
   }
 }

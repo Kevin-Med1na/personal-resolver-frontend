@@ -1,0 +1,21 @@
+<section class="faq" id="preguntas" aria-labelledby="faq-title">
+  <p class="kicker kicker-blue">Preguntas</p>
+  <h2 class="section-title" id="faq-title">Antes de consultar.</h2>
+
+  <div class="list">
+    @for (item of questions; track item.question) {
+      <details class="item">
+        <summary>
+          <span>{{ item.question }}</span>
+          <span class="toggle" aria-hidden="true"></span>
+        </summary>
+        <p>{{ item.answer }}</p>
+      </details>
+    }
+  </div>
+
+  <p class="more">
+    ¿Encontraste un error o falta algo?
+    <a class="link" [href]="issuesUrl" target="_blank" rel="noopener">Cuéntalo en GitHub</a>.
+  </p>
+</section>

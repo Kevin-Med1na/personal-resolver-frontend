@@ -1,0 +1,105 @@
+:host {
+  display: block;
+}
+
+.faq {
+  max-width: var(--width-prose);
+  margin: 0 auto;
+  padding: clamp(64px, 9vw, 104px) var(--page-gutter);
+}
+
+.section-title {
+  margin-top: 12px;
+}
+
+.list {
+  display: grid;
+  gap: 10px;
+  margin-top: 36px;
+}
+
+.item {
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-row);
+  background: var(--color-canvas);
+  box-shadow: 0 1px 2px rgb(18 18 18 / 0.04), 0 6px 18px -12px rgb(18 18 18 / 0.14);
+  transition: border-color 0.15s ease;
+}
+
+.item:hover,
+.item[open] {
+  border-color: var(--color-line-strong);
+}
+
+summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px 20px 18px 22px;
+  border-radius: var(--radius-row);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  list-style: none;
+  cursor: pointer;
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
+
+/* "+" que gira hasta "×" al abrir. */
+.toggle {
+  position: relative;
+  flex: none;
+  width: 14px;
+  height: 14px;
+  color: var(--color-blue);
+  transition: transform 0.25s var(--ease-out-soft);
+}
+
+.toggle::before,
+.toggle::after {
+  content: '';
+  position: absolute;
+  inset: 6px 0;
+  border-radius: 1px;
+  background: currentColor;
+}
+
+.toggle::after {
+  transform: rotate(90deg);
+}
+
+.item[open] .toggle {
+  transform: rotate(45deg);
+}
+
+/* Apertura animada donde el navegador lo permite; en el resto, inmediata. */
+.item::details-content {
+  block-size: 0;
+  overflow: hidden;
+  transition:
+    block-size 0.3s var(--ease-out-soft),
+    content-visibility 0.3s allow-discrete;
+}
+
+.item[open]::details-content {
+  block-size: auto;
+}
+
+.item p {
+  max-width: 62ch;
+  margin: 0;
+  padding: 0 22px 20px;
+  color: var(--color-muted);
+  font-size: 0.9688rem;
+  line-height: 1.6;
+}
+
+.more {
+  margin: 18px 0 0;
+  color: var(--color-faint);
+  font-size: 0.875rem;
+}

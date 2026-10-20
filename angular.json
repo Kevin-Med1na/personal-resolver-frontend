@@ -26,6 +26,7 @@
               }
             ],
             "styles": [
+              "@fontsource-variable/inter/opsz.css",
               "src/styles.css"
             ],
             "server": "src/main.server.ts",

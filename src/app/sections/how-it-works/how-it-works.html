@@ -1,0 +1,29 @@
+<section class="steps" id="como-funciona" aria-labelledby="steps-title">
+  <p class="kicker kicker-blue">Cómo se usa</p>
+  <h2 class="section-title" id="steps-title">
+    Tres pasos. <span class="quiet">Sin crear una cuenta.</span>
+  </h2>
+
+  <ol class="list">
+    <li class="step">
+      <span class="number number-1" aria-hidden="true">1</span>
+      <h3>Elige el tipo</h3>
+      <p>Cédula para consultar a una persona; NIT para una empresa.</p>
+    </li>
+    <li class="step">
+      <span class="number number-2" aria-hidden="true">2</span>
+      <h3>Escribe el número</h3>
+      <p>La cédula va sin puntos. El NIT acepta puntos, espacios y dígito de verificación.</p>
+    </li>
+    <li class="step">
+      <span class="number number-3" aria-hidden="true">3</span>
+      <h3>Revisa el resultado</h3>
+      <p>Datos básicos y cuántas veces se ha consultado el documento con la misma información.</p>
+    </li>
+  </ol>
+
+  <button class="btn btn-primary" type="button" (click)="start.emit()">
+    Hacer una consulta
+    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
+  </button>
+</section>

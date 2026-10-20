@@ -1,42 +1,242 @@
 @import 'tailwindcss';
 
+/*
+ * Sistema visual de Personal Resolver.
+ *
+ * Base neutra (blanco, gris de banda, tinta casi negra) y color solo donde
+ * informa: el marco de la consola, los pasos y los estados. El acento es el
+ * tricolor colombiano reinterpretado: el amarillo se usa como relleno con
+ * texto oscuro encima, nunca como color de texto.
+ *
+ * `static` emite todas las variables aunque ninguna utilidad de Tailwind las
+ * use: los estilos de los componentes las leen con var().
+ */
+@theme static {
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+
+  /* Neutros */
+  --color-canvas: #ffffff;
+  --color-band: #f5f5f4;
+  --color-paper: #faf9f6;
+  --color-ink: #121212;
+  --color-ink-soft: #333333;
+  --color-muted: #595959;
+  --color-faint: #6b6b6b;
+  /* Solo para texto grande: 3,4:1 sobre blanco. */
+  --color-quiet: #8a8a8a;
+  --color-line: #e6e6e3;
+  --color-line-strong: #d4d4d0;
+  /* Borde de los campos: 3:1 sobre blanco, el mínimo para un control. */
+  --color-field: #8c8c88;
+
+  /* Tricolor */
+  --color-yellow: #fcd116;
+  --color-yellow-ink: #a16207;
+  --color-blue: #2a52d8;
+  --color-blue-ink: #1f45c2;
+  --color-red: #c8102e;
+
+  /* Estados */
+  --color-ok: #137333;
+  --color-ok-soft: #e4f3e8;
+  --color-danger: #b3261e;
+  --color-danger-soft: #fbe9e7;
+  --color-info-soft: #e9eefc;
+  --color-warn-soft: #fff4c4;
+
+  --text-display: clamp(2.5rem, 1.1rem + 4.6vw, 4.5rem);
+  --text-title: clamp(2rem, 1.45rem + 1.9vw, 2.75rem);
+  --text-record: clamp(1.5rem, 1.2rem + 1.1vw, 2.125rem);
+  --text-lead: clamp(1.0625rem, 1rem + 0.35vw, 1.25rem);
+  --text-label: 0.75rem;
+
+  --tracking-display: -0.04em;
+  --tracking-title: -0.035em;
+  --tracking-label: 0.14em;
+
+  /* Radios según el tamaño del elemento, no uno solo para todo. */
+  --radius-chip: 6px;
+  --radius-field: 16px;
+  --radius-row: 14px;
+  --radius-card: 20px;
+  --radius-window: 20px;
+  --radius-stage: 32px;
+
+  --shadow-hairline: 0 1px 2px rgb(18 18 18 / 0.06);
+  --shadow-card: 0 1px 2px rgb(18 18 18 / 0.04), 0 12px 28px -14px rgb(18 18 18 / 0.14);
+  --shadow-stage: 0 44px 80px -44px rgb(26 46 140 / 0.6);
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 :root {
-  --app-bg: #f4f7f7;
-  --ink-strong: #173d54;
-  --ink-soft: #6f818b;
+  --page-gutter: clamp(16px, 4vw, 32px);
+  --width-page: 1120px;
+  --width-stage: 1040px;
+  --width-prose: 760px;
+
   color-scheme: light;
-  font-family:
-    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", sans-serif;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  /* Permite animar la apertura de las preguntas hasta su altura natural. */
+  interpolate-size: allow-keywords;
 }
 
-* {
-  box-sizing: border-box;
+@layer base {
+  html {
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    scroll-behavior: smooth;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    min-height: 100dvh;
+    margin: 0;
+    background: var(--color-canvas);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  ::selection {
+    background: rgb(252 209 22 / 0.5);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-blue);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
 }
 
-html {
-  min-height: 100%;
-  background: var(--app-bg);
-}
+@layer components {
+  /* Etiqueta monoespaciada: introduce secciones y metadatos. */
+  .kicker {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-faint);
+  }
 
-body {
-  min-height: 100dvh;
-  margin: 0;
-  background: var(--app-bg);
-}
+  .kicker-blue {
+    color: var(--color-blue-ink);
+  }
 
-button,
-input {
-  font: inherit;
-}
+  .section-title {
+    margin: 0;
+    font-size: var(--text-title);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: var(--tracking-title);
+    color: var(--color-ink);
+    text-wrap: balance;
+  }
 
-button:focus-visible,
-input:focus-visible,
-summary:focus-visible {
-  outline: 3px solid rgba(77, 149, 142, 0.22);
-  outline-offset: 2px;
+  /* Segunda frase de un titular, en gris. */
+  .quiet {
+    color: var(--color-quiet);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 3rem;
+    padding: 0 1.375rem;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease,
+      color 0.15s ease,
+      transform 0.15s var(--ease-out-soft);
+  }
+
+  .btn:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+
+  .btn:disabled {
+    cursor: progress;
+  }
+
+  .btn svg {
+    width: 1.125rem;
+    height: 1.125rem;
+    flex: none;
+  }
+
+  .btn-primary {
+    background: var(--color-ink);
+    color: #fff;
+    box-shadow:
+      0 1px 2px rgb(0 0 0 / 0.2),
+      inset 0 1px 0 rgb(255 255 255 / 0.12);
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background: #2c2c2c;
+  }
+
+  .btn-primary:disabled {
+    background: #3d3d3d;
+  }
+
+  .btn-ghost {
+    background: #fff;
+    color: var(--color-ink);
+    border-color: var(--color-line-strong);
+    box-shadow: var(--shadow-hairline);
+  }
+
+  .btn-ghost:hover:not(:disabled) {
+    border-color: var(--color-field);
+  }
+
+  .link {
+    color: var(--color-blue-ink);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
+  .link:hover {
+    text-decoration-thickness: 2px;
+  }
+
+  /* Iconos de trazo: 24 × 24, trazo 1,75, sin relleno. */
+  .icon {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.75;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
 }

@@ -1,0 +1,40 @@
+<footer class="footer">
+  <div class="columns">
+    <div class="identity">
+      <app-brand />
+      <p class="tagline">Datos básicos de personas y empresas colombianas, en una sola consulta.</p>
+      <p class="copyright">© 2026 Personal Resolver · &#64;Kevin-Med1na</p>
+    </div>
+
+    <nav class="column" aria-labelledby="footer-service">
+      <h2 class="kicker" id="footer-service">Servicio</h2>
+      <ul>
+        <li><a href="#consulta">Consultar</a></li>
+        <li><a href="#como-funciona">Cómo funciona</a></li>
+        <li><a href="#preguntas">Preguntas</a></li>
+      </ul>
+    </nav>
+
+    <nav class="column" aria-labelledby="footer-project">
+      <h2 class="kicker" id="footer-project">Proyecto</h2>
+      <ul>
+        <li><a [href]="frontendRepository" target="_blank" rel="noopener">Frontend en GitHub</a></li>
+        <li><a [href]="repository" target="_blank" rel="noopener">Backend en GitHub</a></li>
+        <li><a [href]="frontendRepository + '/issues'" target="_blank" rel="noopener">Reportar un problema</a></li>
+      </ul>
+    </nav>
+
+    <div class="column">
+      <h2 class="kicker" id="footer-sources">Fuentes</h2>
+      <ul aria-labelledby="footer-sources">
+        <li>RUI (DNP)</li>
+        <li>RUES</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="base">
+    <p>Proyecto independiente. No es un servicio oficial.</p>
+    <p>Horario de servicio: {{ serviceHours }}</p>
+  </div>
+</footer>

@@ -13,8 +13,9 @@ El backend es **Persona Resolver**, en el repositorio `personal-resolver`.
 - **Horario de servicio: 7:00 a 17:00 (UTC−5)**, definido en
   `src/app/service-hours.ts`. Es el horario que anuncia la interfaz y con el que
   interpreta que el backend no responda.
-- Las fuentes de la información solo se mencionan en el pie de página
-  (`Fuentes: RUI (DNP) · RUES`). Ningún otro texto de la interfaz las nombra.
+- Las fuentes de la información solo se mencionan en la columna **Fuentes** del
+  pie de página: RUI (DNP) y RUES. Ningún otro texto de la interfaz las nombra,
+  y una prueba lo comprueba.
 
 ---
 
@@ -30,7 +31,14 @@ El backend es **Persona Resolver**, en el repositorio `personal-resolver`.
   información y la fecha de la consulta anterior (o de la primera).
 - Disponibilidad del servicio, en la cabecera y en el aviso de horario, siempre
   con el mismo estado (ver abajo).
-- En pantallas angostas, la página se desplaza sola hasta el resultado.
+- Un tratamiento distinto para cada estado del panel de resultado: inicial (qué
+  datos mostrará), consultando, persona, empresa, sin resultados, error de la
+  consulta (con "Reintentar"), servicio no disponible y fuera de horario. Los
+  datos no válidos, incluido un `400` del backend, se indican junto al campo.
+- Si el resultado queda debajo del pliegue, la página se desplaza lo justo para
+  mostrarlo.
+- Secciones de apoyo: cómo se usa y preguntas frecuentes. Describen lo que hace
+  el código; ninguna nombra las fuentes.
 
 ## Disponibilidad
 
@@ -69,6 +77,25 @@ consulta está en otra zona horaria, también se muestra convertido (por ejemplo
 La página se prerenderiza: la hora y el estado del backend solo se calculan en el
 navegador, después de la hidratación, para que el HTML no congele la hora del
 build.
+
+---
+
+## Diseño
+
+- **Tokens** en `src/styles.css`, dentro de `@theme static` de Tailwind CSS 4:
+  colores, tipografía, radios y sombras. Los componentes los leen con `var()`.
+- **Paleta:** base neutra (blanco, gris de banda, tinta casi negra) y, como
+  acento, el tricolor colombiano. El amarillo de la bandera solo se usa como
+  relleno con texto oscuro encima; para texto hay una versión oscura que cumple
+  el contraste AA.
+- **Tipografía:** Inter variable con eje óptico, incluida en el proyecto con
+  `@fontsource-variable/inter` (licencia OFL); los navegadores solo descargan el
+  subconjunto latino. Las etiquetas y metadatos usan la monoespaciada del
+  sistema.
+- **Movimiento:** solo transiciones cortas al cambiar de estado, el indicador
+  del selector y la apertura de las preguntas. Con `prefers-reduced-motion` se
+  desactivan, incluido el desplazamiento suave.
+- Sin modo oscuro: la interfaz declara `color-scheme: light`.
 
 ---
 
@@ -190,14 +217,19 @@ src/
 │   ├── models/document.models.ts         # contrato con el backend
 │   ├── services/document-api.service.ts  # /api/lookup y /api/health
 │   ├── service-hours.ts                  # horario de servicio y zonas horarias
-│   ├── service-hours.spec.ts
+│   ├── document-format.ts                # "CC 12.345.678", "NIT 891.408.584"
+│   ├── ui/brand.ts                       # marca
+│   ├── sections/
+│   │   ├── how-it-works/                 # "Tres pasos."
+│   │   ├── faq/                          # preguntas frecuentes
+│   │   └── site-footer/                  # pie: el único lugar con las fuentes
 │   ├── app.ts                            # estado, disponibilidad y consulta
-│   ├── app.html
+│   ├── app.html                          # encabezado, portada y consola
 │   ├── app.css
-│   └── app.spec.ts
+│   └── *.spec.ts
 ├── proxy.conf.json
 ├── server.ts                             # servidor SSR de Angular
-└── styles.css
+└── styles.css                            # tokens y estilos compartidos
 vercel.ts                                 # rewrite /api/* hacia BACKEND_URL
 ```
 
