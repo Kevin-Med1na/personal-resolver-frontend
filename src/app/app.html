@@ -1,0 +1,285 @@
+<div class="app-shell">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </div>
+      <div>
+        <span class="brand-name">Personal Resolver</span>
+        <span class="brand-caption">Consulta de documentos colombianos</span>
+      </div>
+    </div>
+
+    <div class="api-status" role="status" [attr.data-state]="availability()">
+      <span class="status-dot" aria-hidden="true"></span>
+      {{ availabilityLabel() }}
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="side">
+      <section class="intro">
+        <span class="eyebrow">IDENTIDAD &amp; REGISTROS</span>
+        <h1>Consulta una persona o empresa en segundos.</h1>
+        <p>
+          Cédulas y NIT desde un solo formulario, con solo la información
+          relevante de la persona o empresa.
+        </p>
+      </section>
+
+      <aside class="schedule" aria-label="Horario de servicio" [attr.data-state]="availability()">
+        <span class="schedule-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="8.25"/>
+            <path d="M12 7.75V12l2.75 1.75"/>
+          </svg>
+        </span>
+
+        <div class="schedule-body">
+          <span class="schedule-title">Horario de servicio</span>
+          <strong>
+            {{ serviceHours }}
+            <span class="schedule-offset">{{ serviceOffset }}</span>
+          </strong>
+          @if (localHours(); as local) {
+            <small>En tu zona horaria: {{ local.range }} ({{ local.offset }})</small>
+          }
+        </div>
+
+        <span class="schedule-state">
+          <span class="schedule-dot" aria-hidden="true"></span>
+          <span>
+            {{ availabilityLabel() }}
+            <small>{{ availabilityDetail() }}</small>
+          </span>
+        </span>
+      </aside>
+
+      <div class="search-panel">
+        <div class="type-switch" role="tablist" aria-label="Tipo de documento">
+          <button
+            type="button"
+            role="tab"
+            [class.active]="documentType === 'CEDULA'"
+            [attr.aria-selected]="documentType === 'CEDULA'"
+            (click)="selectType('CEDULA')">
+            <span class="type-icon">CC</span>
+            <span>
+              <strong>Cédula</strong>
+              <small>Persona</small>
+            </span>
+          </button>
+
+          <button
+            type="button"
+            role="tab"
+            [class.active]="documentType === 'NIT'"
+            [attr.aria-selected]="documentType === 'NIT'"
+            (click)="selectType('NIT')">
+            <span class="type-icon company">NIT</span>
+            <span>
+              <strong>NIT</strong>
+              <small>Empresa</small>
+            </span>
+          </button>
+        </div>
+
+        <form (ngSubmit)="submit()" novalidate>
+          <label for="documentNumber">Número de documento</label>
+
+          <div class="input-wrap" [class.focused]="documentNumber.length > 0">
+            <span class="input-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M7 4.75h10A2.25 2.25 0 0 1 19.25 7v10A2.25 2.25 0 0 1 17 19.25H7A2.25 2.25 0 0 1 4.75 17V7A2.25 2.25 0 0 1 7 4.75Z"/>
+                <path d="M8 9h8M8 12h5M8 15h3"/>
+              </svg>
+            </span>
+
+            <input
+              id="documentNumber"
+              name="documentNumber"
+              [(ngModel)]="documentNumber"
+              [placeholder]="documentType === 'CEDULA' ? 'Ej. 12345678' : 'Ej. 891408584-5'"
+              [attr.inputmode]="documentType === 'CEDULA' ? 'numeric' : 'text'"
+              autocomplete="off"
+              spellcheck="false"
+            />
+
+            @if (documentNumber) {
+              <button class="clear-btn" type="button" aria-label="Limpiar" (click)="clear()">×</button>
+            }
+          </div>
+
+          <p class="format-hint">
+            @if (documentType === 'CEDULA') {
+              6 a 12 dígitos, sin espacios ni separadores.
+            } @else {
+              Puedes escribir el NIT con puntos, espacios o dígito de verificación.
+            }
+          </p>
+
+          <button class="submit-btn" type="submit" [disabled]="loading()">
+            @if (loading()) {
+              <span class="spinner" aria-hidden="true"></span>
+              Consultando...
+            } @else {
+              Consultar documento
+              <span class="arrow" aria-hidden="true">→</span>
+            }
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <section class="workspace" #workspace aria-live="polite">
+      @if (loading()) {
+        <div class="state-card loading-card">
+          <div class="loading-orb"></div>
+          <div>
+            <span class="state-kicker">CONSULTA EN CURSO</span>
+            <h2>Estamos obteniendo la información.</h2>
+            <p>La primera consulta puede tardar unos segundos.</p>
+          </div>
+        </div>
+      } @else if (error(); as failure) {
+        <div class="state-card error-card" [class.unavailable]="failure.unavailable">
+          <div class="state-icon">!</div>
+          <div>
+            <span class="state-kicker">{{ failure.kicker }}</span>
+            <h2>{{ failure.message }}</h2>
+            <p>{{ failure.hint }}</p>
+          </div>
+        </div>
+      } @else if (result()) {
+        <div class="result-header">
+          <div>
+            <span class="state-kicker">RESULTADO</span>
+            <h2>{{ isPerson() ? 'Persona encontrada' : 'Empresa encontrada' }}</h2>
+          </div>
+          <span class="found-chip"><span></span> Encontrado</span>
+        </div>
+
+        @if (isPerson()) {
+          @if (getPerson(); as person) {
+            <article class="result-card">
+              <div class="result-main">
+                <div class="avatar">
+                  {{ (person.fullName || '?').slice(0, 1) }}
+                </div>
+                <div class="entity-heading">
+                  <span class="entity-label">PERSONA</span>
+                  <h3>{{ person.fullName || 'Nombre no informado' }}</h3>
+                  <p class="document-value">Cédula {{ person.documentNumber }}</p>
+                </div>
+              </div>
+
+              <div class="data-grid">
+                <div class="data-item">
+                  <span>Género</span>
+                  <strong>{{ person.gender || 'No informado' }}</strong>
+                </div>
+                <div class="data-item">
+                  <span>Edad</span>
+                  <strong>{{ person.age ?? 'No informada' }}</strong>
+                </div>
+                <div class="data-item">
+                  <span>Departamento registrado</span>
+                  <strong>{{ person.state || 'No informado' }}</strong>
+                </div>
+                <div class="data-item">
+                  <span>Residencia registrada</span>
+                  <strong>{{ person.city || 'No informada' }}</strong>
+                </div>
+              </div>
+
+              <div class="consultation-strip">
+                <div class="consultation-stat">
+                  <span>Consultas registradas</span>
+                  <strong>{{ consultCountLabel() }}</strong>
+                </div>
+                <div class="consultation-stat">
+                  <span>{{ consultDateLabel() }}</span>
+                  <strong>{{ formattedConsultDate() }}</strong>
+                </div>
+              </div>
+            </article>
+          }
+        }
+
+        @if (isCompany()) {
+          @if (getCompany(); as company) {
+            <article class="result-card">
+              <div class="result-main">
+                <div class="avatar company-avatar">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M5 20V7.75A1.75 1.75 0 0 1 6.75 6h6.5A1.75 1.75 0 0 1 15 7.75V20M15 10.25h2.25A1.75 1.75 0 0 1 19 12v8M3.5 20h17"/>
+                    <path d="M8.25 9.5h2M8.25 12.5h2M8.25 15.5h2"/>
+                  </svg>
+                </div>
+                <div class="entity-heading">
+                  <span class="entity-label">EMPRESA</span>
+                  <h3>{{ company.companyName || 'Razón social no informada' }}</h3>
+                  <p class="document-value">NIT {{ company.documentNumber }}</p>
+                </div>
+              </div>
+
+              <div class="data-grid">
+                <div class="data-item wide">
+                  <span>Tipo de empresa</span>
+                  <strong>{{ company.businessType || 'No informado' }}</strong>
+                </div>
+                <div class="data-item">
+                  <span>Estado</span>
+                  <strong>{{ company.state || 'No informado' }}</strong>
+                </div>
+                <div class="data-item">
+                  <span>Ciudad</span>
+                  <strong>{{ company.city || 'No informada' }}</strong>
+                </div>
+              </div>
+
+              <div class="consultation-strip">
+                <div class="consultation-stat">
+                  <span>Consultas registradas</span>
+                  <strong>{{ consultCountLabel() }}</strong>
+                </div>
+                <div class="consultation-stat">
+                  <span>{{ consultDateLabel() }}</span>
+                  <strong>{{ formattedConsultDate() }}</strong>
+                </div>
+              </div>
+            </article>
+          }
+        }
+      } @else {
+        <div class="empty-state">
+          <div class="empty-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <circle cx="11" cy="11" r="6.75"/>
+              <path d="m16 16 4.25 4.25"/>
+            </svg>
+          </div>
+          <span class="state-kicker">LISTO PARA CONSULTAR</span>
+          <h2>Tu resultado aparecerá aquí.</h2>
+          <p>Selecciona el tipo de documento, escribe el número y realiza la consulta.</p>
+
+          <ul class="source-list">
+            <li>
+              <span class="type-icon">CC</span>
+              <span><strong>Cédula</strong> Nombre, género, edad y residencia registrada.</span>
+            </li>
+            <li>
+              <span class="type-icon company">NIT</span>
+              <span><strong>NIT</strong> Razón social, tipo de empresa, estado y ciudad.</span>
+            </li>
+          </ul>
+        </div>
+      }
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>Personal Resolver</span>
+    <span>Fuentes: RUI (DNP) · RUES</span>
+  </footer>
+</div>
