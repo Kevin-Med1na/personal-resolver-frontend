@@ -15,7 +15,9 @@ El backend es **Persona Resolver**, en el repositorio `personal-resolver`.
   interpreta que el backend no responda.
 - Las fuentes de la información solo se mencionan en la columna **Fuentes** del
   pie de página: RUI (DNP) y RUES. Ningún otro texto de la interfaz las nombra,
-  y una prueba lo comprueba.
+  y una prueba lo comprueba en todas las páginas.
+- **Responsable de los datos y contacto**, que publican la política de privacidad
+  y los términos de uso: `src/app/legal.ts`.
 
 ---
 
@@ -33,12 +35,17 @@ El backend es **Persona Resolver**, en el repositorio `personal-resolver`.
   con el mismo estado (ver abajo).
 - Un tratamiento distinto para cada estado del panel de resultado: inicial (qué
   datos mostrará), consultando, persona, empresa, sin resultados, error de la
-  consulta (con "Reintentar"), servicio no disponible y fuera de horario. Los
-  datos no válidos, incluido un `400` del backend, se indican junto al campo.
+  consulta (con "Reintentar"), demasiadas consultas (con cuánto esperar), servicio
+  no disponible y fuera de horario. Los datos no válidos, incluido un `400` del
+  backend, se indican junto al campo.
 - Si el resultado queda debajo del pliegue, la página se desplaza lo justo para
   mostrarlo.
 - Secciones de apoyo: cómo se usa y preguntas frecuentes. Describen lo que hace
   el código; ninguna nombra las fuentes.
+- Páginas `/privacidad` (política de tratamiento de datos personales, Ley 1581 de
+  2012) y `/terminos` (términos de uso), enlazadas desde el pie y desde la nota
+  bajo el formulario. Cualquier otra ruta muestra una página 404 que los
+  buscadores no indexan.
 
 ## Disponibilidad
 
@@ -96,6 +103,27 @@ build.
   del selector y la apertura de las preguntas. Con `prefers-reduced-motion` se
   desactivan, incluido el desplazamiento suave.
 - Sin modo oscuro: la interfaz declara `color-scheme: light`.
+- **Íconos:** `public/favicon.svg`, `favicon.ico` (48 × 48) y `apple-touch-icon.png`,
+  todos con la marca.
+
+---
+
+## Buscadores
+
+- Cada página tiene título y descripción propios, y etiquetas Open Graph para la
+  vista previa al compartir el enlace.
+- `public/robots.txt` permite indexar todo menos `/api/`.
+- No hay sitemap: con tres páginas enlazadas entre sí no hace falta, y exigiría
+  escribir la dirección del sitio en el repositorio.
+- La página 404 lleva `noindex`, porque Vercel la sirve con estado `200`.
+- Las vistas previas (preview) de Vercel no se indexan: Vercel les añade
+  `X-Robots-Tag: noindex`.
+
+Para que Google lo indexe (gratis): en [Search Console](https://search.google.com/search-console),
+agregar una propiedad de tipo **prefijo de URL** con la dirección del sitio,
+verificarla con la **etiqueta HTML** (un `<meta name="google-site-verification">`
+en `src/index.html`) y, ya verificada, pedir la indexación de la portada desde
+**Inspección de URLs**.
 
 ---
 
@@ -130,6 +158,13 @@ Para ver la configuración resultante sin desplegar:
 ```bash
 BACKEND_URL=https://backend.example.com npx @vercel/config compile
 ```
+
+`vercel.ts` también define el respaldo para las rutas sin archivo propio: reciben
+`index.csr.html`, la aplicación sin prerenderizar, que muestra la página 404. Los
+archivos y las páginas prerenderizadas (`/`, `/privacidad`, `/terminos`) tienen
+prioridad. `src/main.ts` solo hidrata cuando el HTML recibido es el de la ruta
+pedida (lo marca el renderizado en `meta[name="prerendered-path"]`); si no, dibuja
+la aplicación desde cero.
 
 Comprobación de punta a punta, ya desplegado:
 
@@ -185,6 +220,7 @@ Errores que el frontend interpreta (siempre después de confirmar con
 |---|---|
 | `404` | No encontramos información para el documento consultado. |
 | `400` | La solicitud no es válida. |
+| `429` | Hiciste muchas consultas seguidas. Usa `Retry-After` para decir cuánto esperar. |
 | Otro | No fue posible obtener la información en este momento. |
 
 ### `GET /api/health`
@@ -214,23 +250,34 @@ contenedor.
 ```text
 src/
 ├── app/
-│   ├── models/document.models.ts         # contrato con el backend
-│   ├── services/document-api.service.ts  # /api/lookup y /api/health
-│   ├── service-hours.ts                  # horario de servicio y zonas horarias
-│   ├── document-format.ts                # "CC 12.345.678", "NIT 891.408.584"
-│   ├── ui/brand.ts                       # marca
+│   ├── app.ts                            # marco: cabecera, página y pie
+│   ├── app.routes.ts                     # /, /privacidad, /terminos y 404
+│   ├── app.routes.server.ts              # qué se prerenderiza
+│   ├── availability.service.ts           # estado del servicio (cabecera y portada)
+│   ├── home/                             # portada, consola y estados de la consulta
+│   ├── pages/
+│   │   ├── privacy/                      # política de privacidad
+│   │   ├── terms/                        # términos de uso
+│   │   └── not-found/                    # 404
 │   ├── sections/
 │   │   ├── how-it-works/                 # "Tres pasos."
 │   │   ├── faq/                          # preguntas frecuentes
 │   │   └── site-footer/                  # pie: el único lugar con las fuentes
-│   ├── app.ts                            # estado, disponibilidad y consulta
-│   ├── app.html                          # encabezado, portada y consola
-│   ├── app.css
+│   ├── ui/brand.ts                       # marca
+│   ├── models/document.models.ts         # contrato con el backend
+│   ├── services/document-api.service.ts  # /api/lookup y /api/health
+│   ├── service-hours.ts                  # horario de servicio y zonas horarias
+│   ├── document-format.ts                # "CC 12.345.678", "NIT 891.408.584"
+│   ├── legal.ts                          # responsable y contacto
+│   ├── page-meta.ts                      # descripción e indexación por página
+│   ├── prerendered-path.ts               # cuándo hidratar (ver main.ts)
 │   └── *.spec.ts
+├── main.ts
 ├── proxy.conf.json
 ├── server.ts                             # servidor SSR de Angular
 └── styles.css                            # tokens y estilos compartidos
-vercel.ts                                 # rewrite /api/* hacia BACKEND_URL
+public/                                   # íconos y robots.txt
+vercel.ts                                 # rewrite /api/* y respaldo para rutas sin archivo
 ```
 
 ## Relación con el backend

@@ -10,9 +10,6 @@ export interface PersonBasicData {
   city: string | null;
   address: string | null;
   age: number | null;
-  ruiGroup: string | null;
-  ruiLevel: string | null;
-  incomeGroup: string | null;
   municipalityCode: string | null;
 }
 

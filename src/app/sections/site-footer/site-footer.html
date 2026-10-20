@@ -3,15 +3,15 @@
     <div class="identity">
       <app-brand />
       <p class="tagline">Datos básicos de personas y empresas colombianas, en una sola consulta.</p>
-      <p class="copyright">© 2026 Personal Resolver · &#64;Kevin-Med1na</p>
+      <p class="copyright">© 2026 Personal Resolver · <span class="handle">&#64;Kevin-Med1na</span></p>
     </div>
 
     <nav class="column" aria-labelledby="footer-service">
       <h2 class="kicker" id="footer-service">Servicio</h2>
       <ul>
-        <li><a href="#consulta">Consultar</a></li>
-        <li><a href="#como-funciona">Cómo funciona</a></li>
-        <li><a href="#preguntas">Preguntas</a></li>
+        <li><a routerLink="/" fragment="consulta">Consultar</a></li>
+        <li><a routerLink="/" fragment="como-funciona">Cómo funciona</a></li>
+        <li><a routerLink="/" fragment="preguntas">Preguntas</a></li>
       </ul>
     </nav>
 
@@ -21,6 +21,14 @@
         <li><a [href]="frontendRepository" target="_blank" rel="noopener">Frontend en GitHub</a></li>
         <li><a [href]="repository" target="_blank" rel="noopener">Backend en GitHub</a></li>
         <li><a [href]="frontendRepository + '/issues'" target="_blank" rel="noopener">Reportar un problema</a></li>
+      </ul>
+    </nav>
+
+    <nav class="column" aria-labelledby="footer-legal">
+      <h2 class="kicker" id="footer-legal">Legal</h2>
+      <ul>
+        <li><a routerLink="/privacidad">Privacidad</a></li>
+        <li><a routerLink="/terminos">Términos de uso</a></li>
       </ul>
     </nav>
 

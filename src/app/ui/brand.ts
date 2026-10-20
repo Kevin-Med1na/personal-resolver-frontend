@@ -1,13 +1,15 @@
 import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 /**
  * Marca de Personal Resolver: las tres barras desplazadas de la marca
  * original, ahora con el tricolor, más el nombre.
  */
 @Component({
+  imports: [RouterLink],
   selector: 'app-brand',
   template: `
-    <a class="brand" href="/">
+    <a class="brand" routerLink="/">
       <svg class="mark" viewBox="0 0 28 28" aria-hidden="true">
         <rect width="28" height="28" rx="8" />
         <path class="bar-1" d="M9 9.5v9" />

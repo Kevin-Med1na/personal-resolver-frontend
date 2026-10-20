@@ -1,0 +1,93 @@
+:host {
+  display: block;
+}
+
+.legal {
+  max-width: var(--width-prose);
+  margin: 0 auto;
+  padding: clamp(40px, 7vw, 80px) var(--page-gutter) clamp(64px, 9vw, 104px);
+}
+
+.section-title {
+  margin-top: 12px;
+}
+
+.effective {
+  margin: 14px 0 0;
+  color: var(--color-faint);
+  font-size: 0.875rem;
+}
+
+.summary {
+  margin: 28px 0 0;
+  padding: 18px 20px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-row);
+  background: var(--color-paper);
+  color: var(--color-ink-soft);
+  font-size: 0.9688rem;
+  line-height: 1.6;
+}
+
+h2 {
+  margin: 44px 0 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+h3 {
+  margin: 22px 0 0;
+  font-size: 1rem;
+  font-weight: 650;
+}
+
+p,
+li {
+  color: var(--color-muted);
+  font-size: 0.9688rem;
+  line-height: 1.65;
+}
+
+p {
+  margin: 10px 0 0;
+}
+
+ul {
+  margin: 10px 0 0;
+  padding-left: 1.25rem;
+  list-style: disc;
+}
+
+li::marker {
+  color: var(--color-quiet);
+}
+
+li + li {
+  margin-top: 6px;
+}
+
+strong {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+
+.contact {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 8px 20px;
+  margin: 16px 0 0;
+  padding: 0;
+}
+
+.contact dt {
+  color: var(--color-faint);
+  font-size: 0.875rem;
+}
+
+.contact dd {
+  margin: 0;
+  color: var(--color-ink);
+  font-size: 0.9688rem;
+  overflow-wrap: anywhere;
+}

@@ -12,7 +12,7 @@
 
 .columns {
   display: grid;
-  grid-template-columns: minmax(0, 1.6fr) repeat(3, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1.5fr) repeat(4, minmax(0, 1fr));
   gap: 40px 32px;
   padding: 56px 0 44px;
 }
@@ -30,6 +30,10 @@
   color: var(--color-faint);
   font-family: var(--font-mono);
   font-size: 0.75rem;
+}
+
+.handle {
+  white-space: nowrap;
 }
 
 .kicker {

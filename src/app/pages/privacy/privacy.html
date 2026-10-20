@@ -1,0 +1,108 @@
+<article class="legal" aria-labelledby="privacy-title">
+  <p class="kicker kicker-blue">Legal</p>
+  <h1 class="section-title" id="privacy-title">Política de privacidad.</h1>
+  <p class="effective">Política de tratamiento de datos personales · Vigente desde el {{ effectiveDate }}</p>
+
+  <p class="summary">
+    En resumen: guardamos el documento que se consulta y los datos básicos que devuelve, para mostrar
+    cuántas veces se ha consultado. No pedimos datos de quien consulta. Si es tu documento, puedes
+    escribirnos para conocer, corregir o borrar esos datos, y no volverá a consultarse aquí.
+  </p>
+
+  <h2>1. Responsable</h2>
+  <dl class="contact">
+    <dt>Nombre</dt>
+    <dd>{{ controller.name }}, persona natural</dd>
+    <dt>Domicilio</dt>
+    <dd>{{ controller.domicile }}</dd>
+    <dt>Correo</dt>
+    <dd><a class="link" [href]="'mailto:' + controller.email">{{ controller.email }}</a></dd>
+  </dl>
+  <p>
+    Personal Resolver es un proyecto independiente y gratuito. No es un servicio oficial ni está
+    vinculado a las entidades que administran los registros de donde provienen los datos, que se
+    indican en la sección «Fuentes» del pie de página.
+  </p>
+
+  <h2>2. Qué datos tratamos</h2>
+  <h3>De las personas consultadas por cédula</h3>
+  <p>
+    Número de cédula, nombre completo (y su división en nombres y apellidos), sexo, edad, departamento
+    y municipio de residencia registrados, y el código de ese municipio.
+  </p>
+  <p>
+    La fuente también entrega la clasificación socioeconómica de la persona (grupo, nivel y grupo de
+    ingresos). <strong>No la leemos, no la guardamos y no la mostramos.</strong>
+  </p>
+  <h3>De las empresas consultadas por NIT</h3>
+  <p>NIT, razón social, tipo de empresa, estado y ciudad.</p>
+  <h3>De quien consulta</h3>
+  <p>
+    No pedimos cuenta ni datos personales. Para limitar la cantidad de consultas usamos la dirección IP
+    de forma temporal y solo en memoria: no la guardamos ni la registramos. Los proveedores que alojan
+    el servicio pueden registrar datos técnicos de las conexiones, como la IP, según sus propias
+    políticas. La página no usa cookies ni herramientas de analítica.
+  </p>
+
+  <h2>3. Para qué los usamos</h2>
+  <ul>
+    <li>Mostrar a quien consulta los datos básicos asociados al documento.</li>
+    <li>
+      Llevar el historial de consultas de cada documento: cuántas veces se ha consultado con la misma
+      información y cuándo fue la consulta anterior. Si la información cambia, se abre un registro nuevo.
+    </li>
+    <li>Evitar abusos, como las consultas masivas.</li>
+  </ul>
+  <p>No vendemos ni cedemos los datos, y no los usamos para publicidad ni para crear perfiles.</p>
+
+  <h2>4. Cómo los guardamos</h2>
+  <p>
+    En una base de datos PostgreSQL de un proveedor en la nube (Neon). El sitio se aloja en Vercel. Estos
+    proveedores pueden tener sus servidores fuera de Colombia. Las conexiones van cifradas y solo el
+    responsable tiene acceso a la base de datos.
+  </p>
+  <p>
+    Los datos se conservan mientras el servicio esté en funcionamiento, salvo que su titular pida antes
+    la supresión.
+  </p>
+
+  <h2>5. Tus derechos</h2>
+  <p>Como titular de los datos, la Ley 1581 de 2012 te reconoce el derecho a:</p>
+  <ul>
+    <li>Conocer, actualizar y rectificar tus datos.</li>
+    <li>Solicitar prueba de la autorización, salvo en los casos en que la ley no la exige.</li>
+    <li>Ser informado sobre el uso que se les da.</li>
+    <li>Presentar quejas ante la Superintendencia de Industria y Comercio.</li>
+    <li>Revocar la autorización y pedir la supresión de tus datos.</li>
+    <li>Acceder gratis a tus datos.</li>
+  </ul>
+
+  <h2>6. Cómo ejercerlos</h2>
+  <p>
+    Escribe a <a class="link" [href]="'mailto:' + controller.email">{{ controller.email }}</a> con tu nombre,
+    el tipo y número de documento, lo que pides y un medio para responderte. Para comprobar que eres el
+    titular, podemos pedirte un documento que lo acredite.
+  </p>
+  <ul>
+    <li><strong>Consultas:</strong> respondemos en un máximo de 10 días hábiles, prorrogables 5 más si te avisamos.</li>
+    <li>
+      <strong>Reclamos</strong> (corrección, actualización o supresión): respondemos en un máximo de 15 días
+      hábiles, prorrogables 8 más si te avisamos.
+    </li>
+  </ul>
+  <p>
+    Si pides la supresión, borramos los registros de tu documento y lo excluimos del servicio: una
+    consulta posterior responderá como si no hubiera información y no volverá a consultarse en las
+    fuentes. Si un dato es incorrecto, la corrección de fondo corresponde al registro de origen; aquí
+    podemos suprimirlo.
+  </p>
+
+  <h2>7. Si consultas a otra persona</h2>
+  <p>
+    Quien consulta los datos de un tercero es responsable de tener una razón legítima para hacerlo y de
+    respetar la ley de protección de datos. Ver los <a class="link" routerLink="/terminos">términos de uso</a>.
+  </p>
+
+  <h2>8. Cambios</h2>
+  <p>Cualquier cambio a esta política se publicará en esta página, con su fecha.</p>
+</article>

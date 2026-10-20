@@ -85,7 +85,6 @@
   html {
     background: var(--color-canvas);
     color: var(--color-ink);
-    scroll-behavior: smooth;
     font-synthesis: none;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
@@ -112,10 +111,6 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    html {
-      scroll-behavior: auto;
-    }
-
     *,
     *::before,
     *::after {
@@ -124,6 +119,31 @@
       transition-duration: 0.01ms !important;
     }
   }
+}
+
+/* Color de cada estado del servicio: lo usan la cabecera y la portada. */
+[data-state='checking'] {
+  --state-dot: #9a9a96;
+  --state-bg: #ededea;
+  --state-ink: var(--color-muted);
+}
+
+[data-state='available'] {
+  --state-dot: #1e8e3e;
+  --state-bg: var(--color-ok-soft);
+  --state-ink: var(--color-ok);
+}
+
+[data-state='unavailable'] {
+  --state-dot: #d93025;
+  --state-bg: var(--color-danger-soft);
+  --state-ink: var(--color-danger);
+}
+
+[data-state='closed'] {
+  --state-dot: #e0b000;
+  --state-bg: var(--color-yellow);
+  --state-ink: var(--color-ink);
 }
 
 @layer components {

@@ -9,7 +9,12 @@
           <span>{{ item.question }}</span>
           <span class="toggle" aria-hidden="true"></span>
         </summary>
-        <p>{{ item.answer }}</p>
+        <p>
+          {{ item.answer }}
+          @if (item.link; as link) {
+            <a class="link" [routerLink]="link.path">{{ link.label }}</a>.
+          }
+        </p>
       </details>
     }
   </div>

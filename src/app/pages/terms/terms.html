@@ -1,0 +1,69 @@
+<article class="legal" aria-labelledby="terms-title">
+  <p class="kicker kicker-blue">Legal</p>
+  <h1 class="section-title" id="terms-title">Términos de uso.</h1>
+  <p class="effective">Vigentes desde el {{ effectiveDate }}</p>
+
+  <p class="summary">
+    En resumen: consulta tus propios datos, o los de otra persona o empresa solo si tienes una razón
+    legítima. Nada de consultas masivas. La información se muestra tal como la entregan los registros
+    de origen y puede no estar al día.
+  </p>
+
+  <h2>1. El servicio</h2>
+  <p>
+    Personal Resolver es una herramienta gratuita e independiente que muestra datos básicos asociados a
+    una cédula o a un NIT colombianos. No es un servicio oficial ni está vinculada a las entidades que
+    administran los registros consultados. Al usarla aceptas estos términos.
+  </p>
+
+  <h2>2. Uso permitido</h2>
+  <p>
+    Puedes consultar tus propios datos. Los de otra persona o empresa, solo cuando tengas una razón
+    legítima, como verificar la identidad de una contraparte, y respetando la ley de protección de
+    datos personales (Ley 1581 de 2012).
+  </p>
+
+  <h2>3. Lo que no está permitido</h2>
+  <ul>
+    <li>Hacer consultas masivas o automatizadas, recorrer números de documento o armar bases de datos con los resultados.</li>
+    <li>Usar la información para acosar, discriminar, suplantar a alguien o cualquier otro fin ilegal.</li>
+    <li>Intentar evadir los límites de consultas o afectar el funcionamiento del servicio.</li>
+  </ul>
+
+  <h2>4. Límites y disponibilidad</h2>
+  <p>
+    Cada persona puede hacer un número limitado de consultas por minuto y por día; al superarlo, el
+    servicio pide esperar. El horario de servicio es de {{ serviceHours }}; fuera de él puede no estar
+    disponible. El servicio puede interrumpirse o cambiar sin previo aviso.
+  </p>
+
+  <h2>5. La información</h2>
+  <p>
+    Se muestra tal como la entregan los registros de origen, sin modificarla, y puede estar
+    desactualizada o incompleta. No garantizamos su exactitud y no reemplaza un certificado oficial.
+  </p>
+
+  <h2>6. Responsabilidad</h2>
+  <p>
+    Eres responsable del uso que hagas de la información que consultes. En la medida en que la ley lo
+    permita, el responsable del servicio no responde por daños derivados de ese uso ni de que el
+    servicio no esté disponible.
+  </p>
+
+  <h2>7. Privacidad</h2>
+  <p>
+    Cómo se tratan los datos, y cómo pedir su consulta o supresión, está en la
+    <a class="link" routerLink="/privacidad">política de privacidad</a>.
+  </p>
+
+  <h2>8. Cambios y ley aplicable</h2>
+  <p>
+    Estos términos pueden cambiar; la versión vigente es la publicada en esta página. Se rigen por las
+    leyes de la República de Colombia.
+  </p>
+
+  <h2>9. Contacto</h2>
+  <p>
+    <a class="link" [href]="'mailto:' + controller.email">{{ controller.email }}</a>
+  </p>
+</article>

@@ -1,9 +1,12 @@
 import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { SERVICE_END_HOUR, SERVICE_OFFSET_LABEL, SERVICE_START_HOUR } from '../../service-hours';
 
 interface Question {
   question: string;
   answer: string;
+  /** Enlace interno opcional al final de la respuesta. */
+  link?: { label: string; path: string };
 }
 
 /**
@@ -11,6 +14,7 @@ interface Question {
  * nombra las fuentes, que solo aparecen en el pie de página.
  */
 @Component({
+  imports: [RouterLink],
   selector: 'app-faq',
   styleUrl: './faq.css',
   templateUrl: './faq.html',
@@ -48,7 +52,14 @@ export class Faq {
       question: '¿Se guardan las consultas?',
       answer: 'Sí. Se guardan el documento consultado, la respuesta obtenida y la fecha; así el '
         + 'resultado puede indicar cuántas veces se ha consultado y cuándo. No se pide cuenta ni ningún '
-        + 'dato de quien consulta.',
+        + 'dato de quien consulta. Si es tu documento, puedes pedir que se borren sus datos y que no '
+        + 'vuelva a consultarse aquí.',
+      link: { label: 'Cómo pedirlo', path: '/privacidad' },
+    },
+    {
+      question: '¿Hay un límite de consultas?',
+      answer: 'Sí. Para evitar consultas masivas, cada persona puede hacer un número limitado de '
+        + 'consultas por minuto y por día. Si lo superas, el servicio te dirá cuánto esperar.',
     },
     {
       question: '¿Es un servicio oficial?',

@@ -26,11 +26,17 @@ if (!backendUrl && !isPreview) {
 // Exportación por defecto: es la que leen tanto el build de Vercel como
 // `npx @vercel/config compile`.
 export default {
-  // Proxy en el CDN de Vercel: el navegador llama a /api en el mismo origen,
-  // sin CORS, y la petición llega al backend. Un preview sin BACKEND_URL se
-  // publica sin backend: la interfaz funciona y muestra el servicio como no
-  // disponible.
-  rewrites: backendUrl
-    ? [routes.rewrite('/api/:path*', `${backendUrl}/api/:path*`)]
-    : [],
+  rewrites: [
+    // Proxy en el CDN de Vercel: el navegador llama a /api en el mismo origen,
+    // sin CORS, y la petición llega al backend. Un preview sin BACKEND_URL se
+    // publica sin backend: la interfaz funciona y muestra el servicio como no
+    // disponible.
+    ...(backendUrl ? [routes.rewrite('/api/:path*', `${backendUrl}/api/:path*`)] : []),
+
+    // Las rutas sin archivo propio reciben la aplicación sin prerenderizar,
+    // que muestra la página 404. Los archivos estáticos y las páginas
+    // prerenderizadas tienen prioridad: un rewrite solo aplica si no existe
+    // un archivo en esa ruta.
+    routes.rewrite('/(.*)', '/index.csr.html'),
+  ],
 } satisfies VercelConfig;

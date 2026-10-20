@@ -1,0 +1,4 @@
+# Todo el sitio puede indexarse; la API no.
+User-agent: *
+Allow: /
+Disallow: /api/
