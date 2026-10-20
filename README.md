@@ -84,15 +84,21 @@ Navegador ──► Vercel ──rewrite /api/*──► BACKEND_URL
 
 La dirección del backend **no está en el repositorio**: `vercel.ts` la toma de la
 variable de entorno `BACKEND_URL` al compilar. Hay que definirla en el proyecto de
-Vercel (*Settings → Environment Variables*, para Production y Preview):
+Vercel (*Settings → Environment Variables*), **solo para Production**:
 
 ```text
 BACKEND_URL=https://backend.example.com
 ```
 
-Si falta, el build falla con un mensaje claro en vez de publicar un sitio sin
-backend. Si cambia, hay que volver a desplegar. Para ver la configuración
-resultante sin desplegar:
+- **Production:** si falta, el build falla con un mensaje claro en vez de publicar
+  un sitio sin backend. Si cambia, hay que volver a desplegar.
+- **Preview** (pull requests, incluidos los de forks): sin la variable, el sitio se
+  publica sin conexión al backend; la interfaz funciona y muestra el servicio como
+  no disponible. Así los previews no conocen la dirección del backend. Además,
+  con *Git Fork Protection* activo (lo está por defecto), los PR de forks esperan
+  tu aprobación antes de desplegarse.
+
+Para ver la configuración resultante sin desplegar:
 
 ```bash
 BACKEND_URL=https://backend.example.com npx @vercel/config compile
